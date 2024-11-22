@@ -86,10 +86,10 @@ def main(cfg):
     max_length = 500
     if cfg.forget_loss == "dpo":
         torch_format_dataset = TextForgetDatasetDPOQA(cfg.data_path, tokenizer=tokenizer, model_family = cfg.model_family, max_length=max_length, Task_str=cfg.task)
-        #torch_format_dataset_valid = TextForgetDatasetDPOQA(cfg.data_path, tokenizer=tokenizer, model_family = cfg.model_family, max_length=max_length, split=cfg.split)
+        torch_format_dataset_valid = TextForgetDatasetDPOQA(cfg.data_path, tokenizer=tokenizer, model_family = cfg.model_family, max_length=max_length, Task_str=cfg.task)
     else:
         torch_format_dataset = TextForgetDatasetQA(cfg.data_path, tokenizer=tokenizer, model_family = cfg.model_family, max_length=max_length, Task_str=cfg.task, loss_type=cfg.forget_loss)
-        #torch_format_dataset_valid = TextForgetDatasetQA(cfg.data_path, tokenizer=tokenizer, model_family = cfg.model_family, max_length=max_length, split=cfg.split, loss_type=cfg.forget_loss)
+        torch_format_dataset_valid = TextForgetDatasetQA(cfg.data_path, tokenizer=tokenizer, model_family = cfg.model_family, max_length=max_length, Task_str=cfg.task, loss_type=cfg.forget_loss)
     batch_size = cfg.batch_size
     gradient_accumulation_steps = cfg.gradient_accumulation_steps
     steps_per_epoch = len(torch_format_dataset)//(batch_size*gradient_accumulation_steps*num_devices)
@@ -184,8 +184,8 @@ def main(cfg):
         model=model,
         tokenizer=tokenizer,
         train_dataset=torch_format_dataset,
-        #eval_dataset = torch_format_dataset,
-        eval_dataset=torch_format_dataset,
+        eval_dataset = torch_format_dataset_valid,
+        #eval_dataset=torch_format_dataset,
         compute_metrics=None,                # the callback for computing metrics, None in this case since you're doing it in your callback
         # callbacks=[GlobalStepDeletionCallback],
         args=training_args,
